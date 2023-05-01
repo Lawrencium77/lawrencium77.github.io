@@ -5,7 +5,7 @@ date:   2023-03-28 18:16:32 +0100
 categories: pytorch cuda gpu
 ---
 
-# Table of Contents
+## Table of Contents
 1. [Introduction](#introduction)
 2. [Host-Device Synchronization](#host-device-synchronization)
 3. [CUDA events](#cuda-events)
@@ -248,7 +248,7 @@ reset_clock_speed()
 
 ## References
 
-1. Hoffmann, J., Borgeaud, S., Mensch, A., Buchatskaya, E., Cai, T., Rutherford, E., Casas, D.D.L., Hendricks, L.A., Welbl, J., Clark, A. and Hennigan, T., 2022. Training compute-optimal large language models. _arXiv preprint arXiv:2203.15556_.
-2. Dao, T., Fu, D.Y., Ermon, S., Rudra, A. and Ré, C., 2022. Flashattention: Fast and memory-efficient exact attention with io-awareness. _arXiv preprint arXiv:2205.14135_.
-3. Yao, Z., Aminabadi, R.Y., Zhang, M., Wu, X., Li, C. and He, Y., 2022. Zeroquant: Efficient and affordable post-training quantization for large-scale transformers. _arXiv preprint arXiv:2206.01861_.
-4. Fawzi, A., Balog, M., Huang, A., Hubert, T., Romera-Paredes, B., Barekatain, M., Novikov, A., R Ruiz, F.J., Schrittwieser, J., Swirszcz, G. and Silver, D., 2022. Discovering faster matrix multiplication algorithms with reinforcement learning. _Nature_, _610_(7930), pp.47-53.
+1. Hoffmann, J., Borgeaud, S., Mensch, A., Buchatskaya, E., Cai, T., Rutherford, E., Casas, D.D.L., Hendricks, L.A., Welbl, J., Clark, A. and Hennigan, T., 2022. [Training compute-optimal large language models.](https://arxiv.org/abs/2203.15556) _arXiv preprint arXiv:2203.15556_.
+2. Dao, T., Fu, D.Y., Ermon, S., Rudra, A. and Ré, C., 2022. [Flashattention: Fast and memory-efficient exact attention with io-awareness.](https://arxiv.org/abs/2205.14135) _arXiv preprint arXiv:2205.14135_.
+3. Yao, Z., Aminabadi, R.Y., Zhang, M., Wu, X., Li, C. and He, Y., 2022. [Zeroquant: Efficient and affordable post-training quantization for large-scale transformers.](https://arxiv.org/abs/2206.01861) _arXiv preprint arXiv:2206.01861_.
+4. Fawzi, A., Balog, M., Huang, A., Hubert, T., Romera-Paredes, B., Barekatain, M., Novikov, A., R Ruiz, F.J., Schrittwieser, J., Swirszcz, G. and Silver, D., 2022. [Discovering faster matrix multiplication algorithms with reinforcement learning.](https://www.nature.com/articles/s41586-022-05172-4) _Nature_, _610_(7930), pp.47-53.
