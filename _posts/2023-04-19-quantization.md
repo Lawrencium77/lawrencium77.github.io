@@ -121,7 +121,7 @@ $$Y=WX\tag{5}$$
 
 where $$X\in \mathbb{R}^{N \times d}$$, $$W\in \mathbb{R}^{d \times d}$$, $$Y\in \mathbb{R}^{N \times d}$$  are the input, weight, and output tensors respectively. We omit a bias for simplicity. Consider the case where $$X$$ and $$Y$$ are **FP16**, but the matrix multiply runs in INT8. An INT8 in INT32 out (I8I32) matrix multiplication is implemented as follows:
 
-![](_attachments/Mode%201%20GEMM%20(3)%201.svg)
+![](/images/quantization/Mode%201%20GEMM%20(3)%201.svg)
 
 The arrows indicate a data transfer with dtype given by their colour. The square boxes indicate operations, with dtype of the return variable also given by their colour.
 
