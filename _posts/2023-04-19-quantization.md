@@ -127,7 +127,7 @@ The arrows indicate a data transfer with dtype given by their colour. The square
 
 There are several points to note:
 
-* The input $$X$$ first passes through a quantization operation, labelled Q. This performs the operation described in Equation $(1)$.
+* The input $$X$$ first passes through a quantization operation, labelled Q. This performs the operation described in Equation $$(1)$$.
 * Our weights $$W$$ can be quantized offline. 
 * The accumulated output of the Matmul has **INT32** dtype. This is because multiplication of two signed INT8 values can be represented in INT16. Since a matmul involves the addition of several INT16 values, the accumulator must have dtype INT32 to prevent overflow.[^fn2]
 * The output is passed through a dequantization op, labelled DQ. This performs the operation described in Equation $$(3)$$, and returns in FP16.
