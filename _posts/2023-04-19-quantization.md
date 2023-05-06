@@ -1,3 +1,11 @@
+---
+title: "Fast and Accurate GPU Quantization for Transformers"
+layout: post
+description: We explain how to implement an INT8 quantization scheme for transformers that is flexible and quick.
+keywords: transformers, quantization, GPU 
+---
+
+
 As Transformer models increase in size, the computational cost of running inference also grows. Many organisations now face the challenge of deploying state-of-the-art models in a cost-effective way.
 
 One popular technique for doing so is **quantization** - by reducing the numerical precision of network parameters and activations, quantization aims to **increase throughput** and **decrease memory footprint**. 
