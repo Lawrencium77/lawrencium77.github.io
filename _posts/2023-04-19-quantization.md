@@ -46,7 +46,7 @@ In principle, we can use any function to convert from a higher-precision to lowe
 
 $$Q(x)=\textrm{Int}(x/S)-Z \tag{1}$$
 
-Here, $Q$ and $x$ are the fixed-point output and floating-point input, while $S$ and $Z$ represent the scale factor and bias. $\textrm{Int}$ is a function that rounds to the nearest integer, clipping values outside of the representable range:
+Here, $$Q$$ and $$x$$ are the fixed-point output and floating-point input, while $$S$$ and $$Z$$ represent the scale factor and bias. $$\textrm{Int}$$ is a function that rounds to the nearest integer, clipping values outside of the representable range:
 
 $$\textrm{Int}(x)=\textrm{Clip}(\textrm{Round}(x))\tag{2}$$
 
@@ -54,16 +54,16 @@ After applying our lower-precision operation we return the data to its original 
 
 $$\tilde{x}=S \cdot Q(x) + Z\tag{3}$$
 
-This method is called **uniform quantization** since the quantized values are uniformly distributed over the input space. To calculate $S$ we select a **clipping range** $[\alpha, \beta]$ and then use:
+This method is called **uniform quantization** since the quantized values are uniformly distributed over the input space. To calculate $$S$$ we select a **clipping range** $$[\alpha, \beta]$$ and then use:
 
 $$S=\frac{\beta-\alpha}{2^b-1}\tag{4}$$
 
-Here, $b$ is the number of bits in our quantization scheme. GPU based quantization schemes typically enforce $\alpha=-\beta$, which is known as **symmetric quantization**. This simplifies the (de)quantization functions by setting $Z=0$[^fn1], which helps reduce the cost of the transformation [4].
+Here, $$b$$ is the number of bits in our quantization scheme. GPU based quantization schemes typically enforce $$\alpha=-\beta$$, which is known as **symmetric quantization**. This simplifies the (de)quantization functions by setting $$Z=0$$[^fn1], which helps reduce the cost of the transformation [4].
 
-It's important to note that the rounding function in Equation $(2)$ incurs a loss of information. In general, $\tilde{x}=S\cdot Q(x)+ Z\not = x$.  The value $\tilde{x}-x$ is called **quantization error**. 
+It's important to note that the rounding function in Equation $$(2)$$ incurs a loss of information. In general, $$\tilde{x}=S\cdot Q(x)+ Z\not = x$$.  The value $$\tilde{x}-x$$ is called **quantization error**. 
 
 ### Dynamic vs Static Quantization
-A key question is how to determine the clipping range - determined by $\beta$. Too small, and we’ll excessively “truncate” outlier activations and weights. Too big, and we’ll lose precision.
+A key question is how to determine the clipping range - determined by $$\beta$$. Too small, and we’ll excessively “truncate” outlier activations and weights. Too big, and we’ll lose precision.
 
 While model parameters can always be quantized ahead of time, its activations can either be quantized **dynamically** (with the clipping range calculated for each activation during a forward pass) or **statically** (also offline). 
 
@@ -80,7 +80,7 @@ There are multiple methods to derive a clipping range from these activations, su
 * Minimising KL Divergence between the input and quantized distributions
 * Minimising the Mean-Squared Error between input and quantized distributions
 
-The following figure [5] shows a histogram of input activations for some layer in a neural network. The vertical lines represent the maximum clipping range, $\beta$, for various calibration schemes:
+The following figure [5] shows a histogram of input activations for some layer in a neural network. The vertical lines represent the maximum clipping range, $$\beta$$, for various calibration schemes:
 
 ![Calibration](/images/quantization/Blank%20diagram%20(5).svg)
 
@@ -103,9 +103,9 @@ A final distinction to be made is how quantization parameters are shared between
 </html>
 
 
-The simplest approach is to use the same scale factor for all elements of $W$ (and likewise for $X$). This is known as **per-tensor** quantization.
+The simplest approach is to use the same scale factor for all elements of $$W$$ (and likewise for $$X$$). This is known as **per-tensor** quantization.
 
-It’s also common to share quantization parameters between some subgroups of each input matrix. A popular option is to assign a specific scale factor to each column of $W$, referred to as **per-channel (or per-column) quantization**. This is more accurate than per-tensor quantization; using a specific scale means the error incurred in quantizing each column is lower. 
+It’s also common to share quantization parameters between some subgroups of each input matrix. A popular option is to assign a specific scale factor to each column of $$W$$, referred to as **per-channel (or per-column) quantization**. This is more accurate than per-tensor quantization; using a specific scale means the error incurred in quantizing each column is lower. 
 
 
 ## Specifics of INT8 GEMMs
@@ -119,7 +119,7 @@ Consider the following matrix multiplication:
 
 $$Y=WX\tag{5}$$
 
-where $X\in \mathbb{R}^{N \times d}$, $W\in \mathbb{R}^{d \times d}$, $Y\in \mathbb{R}^{N \times d}$  are the input, weight, and output tensors respectively. We omit a bias for simplicity. Consider the case where $X$ and $Y$ are **FP16**, but the matrix multiply runs in INT8. An INT8 in INT32 out (I8I32) matrix multiplication is implemented as follows:
+where $$X\in \mathbb{R}^{N \times d}$$, $$W\in \mathbb{R}^{d \times d}$$, $$Y\in \mathbb{R}^{N \times d}$$  are the input, weight, and output tensors respectively. We omit a bias for simplicity. Consider the case where $$X$$ and $$Y$$ are **FP16**, but the matrix multiply runs in INT8. An INT8 in INT32 out (I8I32) matrix multiplication is implemented as follows:
 
 ![](_attachments/Mode%201%20GEMM%20(3)%201.svg)
 
@@ -127,10 +127,10 @@ The arrows indicate a data transfer with dtype given by their colour. The square
 
 There are several points to note:
 
-* The input $X$ first passes through a quantization operation, labelled Q. This performs the operation described in Equation $(1)$.
-* Our weights $W$ can be quantized offline. 
+* The input $$X$$ first passes through a quantization operation, labelled Q. This performs the operation described in Equation $(1)$.
+* Our weights $$W$$ can be quantized offline. 
 * The accumulated output of the Matmul has **INT32** dtype. This is because multiplication of two signed INT8 values can be represented in INT16. Since a matmul involves the addition of several INT16 values, the accumulator must have dtype INT32 to prevent overflow.[^fn2]
-* The output is passed through a dequantization op, labelled DQ. This performs the operation described in Equation $(3)$, and returns in FP16.
+* The output is passed through a dequantization op, labelled DQ. This performs the operation described in Equation $$(3)$$, and returns in FP16.
 
 #### I8I8
 Returning in INT8 involves an extra step:
@@ -139,11 +139,11 @@ Returning in INT8 involves an extra step:
 
 In this **requantization** step, labelled RQ, we convert the INT32 representation back into INT8. The benefit is a reduction in the amount of data written from GPU SRAM to DRAM - and so higher performance.
 
-We can think of requantization as first dequantizing to a floating point value, $Z$, and subsequently quantizing. The requantization scale factor combines these steps:
+We can think of requantization as first dequantizing to a floating point value, $$Z$$, and subsequently quantizing. The requantization scale factor combines these steps:
 
 $$S_{RQ}=\frac{S_Z}{S_XS_W}\tag{6}$$
 
-where $S_X$, $S_W$, and $S_Z$ are the scale factors associated with the input, weights, and intermediate variable $Z$.
+where $$S_X$$, $$S_W$$, and $$S_Z$$ are the scale factors associated with the input, weights, and intermediate variable $$Z$$.
 
 #### Quantization Operation Overheads
 
@@ -156,7 +156,7 @@ The following diagrams demonstrate this for I8I32 and I8I8. Fused operators are 
 
 In both cases, the Q node can sometimes be fused with a preceding operation, in this case a layernorm. 
 In I8I32, we see the DQ is fused with the matrix multiply itself. This ensures the dtype of the tensor that's transferred between SRAM and DRAM is FP16 instead of INT32.
-In I8I8, we see the RQ is fused with the matmul. This ensures an INT8 return type. The DQ can sometimes be fused with following ops (for example, a residual add). ^091c98
+In I8I8, we see the RQ is fused with the matmul. This ensures an INT8 return type. The DQ can sometimes be fused with following ops (for example, a residual add). 
 
 For more detail, see the section on [Operator Fusion Implementation](#operator-fusion-implementation).
 
@@ -207,25 +207,25 @@ Mathematically, this is given by:
 
 $$Y = (X\textrm{diag}(s)^{-1})\cdot(\textrm{diag}(s)W)=\hat{X}\hat{W}\tag{7}$$
 
-where $s\in \mathbb{R}^d$  is our smoothing factor. Here's a diagram, again taken from the paper:
+where $$s\in \mathbb{R}^d$$  is our smoothing factor. Here's a diagram, again taken from the paper:
 
 ![smoothquant_gemm](/images/quantization/Screenshot%202023-03-29%20at%2015.01.32.png)
 
-All that remains is how to determine $s$. Since quantization is easiest when all channels have the same maximum value, one possibility is:
+All that remains is how to determine $$s$$. Since quantization is easiest when all channels have the same maximum value, one possibility is:
 
 $$s_j=\max(|X_j|)\tag{8}$$
-where $j$ is the channel index. This ensures that all channels would have the same maximum value (of 1). However, this may push too much of the quantization difficulty to the weights, meaning we harm quantization accuracy.
+where $$j$$ is the channel index. This ensures that all channels would have the same maximum value (of 1). However, this may push too much of the quantization difficulty to the weights, meaning we harm quantization accuracy.
 
 The other extreme is:
 
 $$s_j = 1 / \max({|W_j|})\tag{9}$$
-To control the migration strength, the authors propose combining each of these equations by introducing a hyperparameter, $\alpha \in [0,1]$:
+To control the migration strength, the authors propose combining each of these equations by introducing a hyperparameter, $$\alpha \in [0,1]$$:
 
 $$s_j=\frac{\max(|X_j|)^\alpha}{\max({|W_j|})^{1-\alpha}}\tag{10}$$
 
-$\alpha=1$ corresponds to migrating all difficulty to the weights. $\alpha=0$ migrates all difficulty to the activations. In general, setting $\alpha$ to be between 0.5 and 0.9 achieves good performance.
+$$\alpha=1$$ corresponds to migrating all difficulty to the weights. $$\alpha=0$$ migrates all difficulty to the activations. In general, setting $\alpha$ to be between 0.5 and 0.9 achieves good performance.
 
-It's important to reiterate that this smoothing process can be applied **offline**. For the weights, this is trivial. For the activations, we exploit the fact that GEMM operations in a transformer block often follow a layernorm. Combining the multiplication by $\textrm{diag}(s)^{-1}$  into the layernorm parameters means that it too can be done offline.
+It's important to reiterate that this smoothing process can be applied **offline**. For the weights, this is trivial. For the activations, we exploit the fact that GEMM operations in a transformer block often follow a layernorm. Combining the multiplication by $$\textrm{diag}(s)^{-1}$$  into the layernorm parameters means that it too can be done offline.
 
 A consequence of this is that SmoothQuant can only be applied (without performance overhead) to matrix multiplications that follow an operation which can accommodate a smoothing factor into its parameters, such as LayerNorm. The diagram below indicates the relevant matrix multiplies in a standard transformer block:
 
@@ -397,7 +397,7 @@ For a detailed guide to timing CUDA kernels with PyTorch, see this [previous blo
 
 $$D=\alpha AB+\beta C\tag{11}$$
 
-One important factor which determines INT8 GEMM performance (formula above) is the return type. The matrix multiplication will always have INT8 dtype for matrices $A$ and $B$, which then accumulate in INT32 within the kernel. But we need to decide whether output $C$ should be INT8 or INT32.
+One important factor which determines INT8 GEMM performance (formula above) is the return type. The matrix multiplication will always have INT8 dtype for matrices $$A$$ and $$B$$, which then accumulate in INT32 within the kernel. But we need to decide whether output $$C$$ should be INT8 or INT32.
 
 INT32 return type will be slower as four times as much data is written out (and read into the next kernel).
 
@@ -494,7 +494,7 @@ Both of these changes mean we can consider each matmul in isolation, without hav
 12. Micikevicius, Paulius, et al. "[FP8 formats for deep learning.](https://arxiv.org/pdf/2209.05433.pdf)" _arXiv preprint arXiv:2209.05433_ (2022).
 
 
-
-[^fn1]: The idea that setting $\alpha=-\beta$  implies that $Z=0$ is non-trivial. It holds true because we enforce two conditions for our quantization scheme: the first is that $\beta$ and $\alpha$ map to the maximum and minimum values of our quantized representation respectively, for instance $127$ and $-128$ in INT8; the second is that $Q(0)=0$. For more detail, see [Lei Mao's blog](https://leimao.github.io/article/Neural-Networks-Quantization/) [2].
+# Footnotes
+[^fn1]: The idea that setting $$\alpha=-\beta$$  implies that $$Z=0$$ is non-trivial. It holds true because we enforce two conditions for our quantization scheme: the first is that $$\beta$$ and $$\alpha$$ map to the maximum and minimum values of our quantized representation respectively, for instance $$127$$ and $$-128$$ in INT8; the second is that $$Q(0)=0$$. For more detail, see [Lei Mao's blog](https://leimao.github.io/article/Neural-Networks-Quantization/) [2].
 [^fn2]: It's still theoretically possible to encounter an overflow if a large number of INT16 values are added together. However, this is unlikely in practice and the use of an INT32 accumulator is sufficient.
 [^fn3]: Since the Straight-Through Estimator totally ignores each QDQ node, the [TensorRT PyTorch Quantization docs](https://docs.nvidia.com/deeplearning/tensorrt/pytorch-quantization-toolkit/docs/userguide.html#quantization-aware-training) choose not to use the term "Quantization-Aware Training". They argue that "if anything, it makes training being 'unaware' of quantization".
