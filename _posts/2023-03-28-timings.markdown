@@ -5,24 +5,22 @@ date:   2023-03-28 18:16:32 +0100
 categories: pytorch cuda gpu
 ---
 
-## Table of Contents
-1. [Introduction](#introduction)
-2. [Host-Device Synchronization](#host-device-synchronization)
-3. [CUDA events](#cuda-events)
-4. [Warmup steps](#warmup-steps)
-5. [Fixed clocks](#fixed-clocks)
-6. [Cache flush](#cache-flush)
-7. [Sleep / CUDA graphs](#sleep--cuda-graphs)
-8. [References](#references)
-
-
-## Introduction
-
-If we know anything of machine learning in 2023, it is this: bigger is better. Give your model more data, parameters, and compute and success is (somewhat) guaranteed ([Hoffmann et al., 2022](https://arxiv.org/abs/2203.15556)).
+It is well-known model capability improves with scale, particularly in language modelling ([Hoffmann et al., 2022](https://arxiv.org/abs/2203.15556)).
 
 However, larger models are both memory-hungry and slow. To combat this, there exist a range of techniques that minimise training and inference compute, thus lowering costs. Two examples are FlashAttention ([Dao et al., 2022](https://arxiv.org/abs/2205.14135)) and ZeroQuant ([Yao et al., 2022](https://arxiv.org/abs/2206.01861)). Regardless of the approach, the ability to accurately time individual operations in a computational graph is essential.
 
-Doing so isn't trivial when GPUs are involved. In this blog, we present a comprehensive guide to the tips & tricks required to get accurate and repeatable results. Most are specific to PyTorch but the principles discussed apply to CUDA programming in general.
+Doing so isn't trivial on GPUs. In this blog, we present a comprehensive guide to the tips & tricks required to get accurate and repeatable results. Most are specific to PyTorch but the principles discussed apply to CUDA programming in general.
+
+
+## Contents
+1. [Host-Device Synchronization](#host-device-synchronization)
+2. [CUDA events](#cuda-events)
+3. [Warmup steps](#warmup-steps)
+4. [Fixed clocks](#fixed-clocks)
+5. [Cache flush](#cache-flush)
+6. [Sleep / CUDA graphs](#sleep--cuda-graphs)
+7. [References](#references)
+
 
 ## Host-Device Synchronization
 
