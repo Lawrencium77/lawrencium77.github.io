@@ -231,7 +231,7 @@ A consequence of this is that SmoothQuant can only be applied (without performan
 
 ![smoothquant_flow](/images/quantization/Blank%20diagram%20(4).svg)
 
-
+If you wish to understand SmoothQuant in more detail, [this GitHub Gist](https://gist.github.com/Lawrencium77/5a21217086ca00876b369e05baa6cd43) contains a simple PyTorch implementation.
 
 # Part II: Fast GPU Quantization in Practice
 
