@@ -5,6 +5,7 @@ description: We explain how to implement an INT8 quantization scheme for transfo
 keywords: transformers, quantization, GPU 
 ---
 
+(This post was co-written with my colleague, [David Macleod](https://github.com/david-macleod)).
 
 As Transformer models increase in size, the computational cost of running inference also grows. Many organisations now face the challenge of deploying state-of-the-art models in a cost-effective way.
 
