@@ -5,6 +5,8 @@ date:   2023-03-28 18:16:32 +0100
 categories: pytorch cuda gpu
 ---
 
+(This post was co-written with my colleague, [David Macleod](https://github.com/david-macleod)).
+
 It is well-known model capability improves with scale, particularly in language modelling ([Hoffmann et al., 2022](https://arxiv.org/abs/2203.15556)).
 
 However, larger models are both memory-hungry and slow. To combat this, there exist a range of techniques that minimise training and inference compute, thus lowering costs. Two examples are FlashAttention ([Dao et al., 2022](https://arxiv.org/abs/2205.14135)) and ZeroQuant ([Yao et al., 2022](https://arxiv.org/abs/2206.01861)). Regardless of the approach, the ability to accurately time individual operations in a computational graph is essential.
